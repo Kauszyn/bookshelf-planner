@@ -35,6 +35,18 @@ Aplikacja opiera się na architekturze **MVVM (Model-View-ViewModel)** z jednoki
 *   **ViewModel**: `BookShelfViewModel` zarządza stanem ekranów (przechowuje `StateFlow` z listą książek oraz stanem wyszukiwania `SearchUiState`).
 *   **View**: Ekrany zaimplementowane w Jetpack Compose, które subskrybują stany ViewModelu.
 
+### 3.1. Przepływ ekranów i Nawigacja (Nawigacja Compose)
+Zgodnie z wymaganiami kursu dotyczącymi nawigacji między ekranami, aplikacja posiada zaimplementowany mechanizm wieloekranowego przepływu przy użyciu biblioteki **Navigation Compose**. 
+
+Kluczowe aspekty systemu nawigacji w aplikacji:
+*   **Zarządca nawigacji (NavHost)**: Główny kontener nawigacji znajduje się w klasie `MainActivity.kt` i jest sterowany przez instancję `rememberNavController()`.
+*   **Zdefiniowane trasy (Routes)**: NavHost zarządza trzema głównymi ekranami aplikacji za pomocą unikalnych identyfikatorów tras:
+    1.  `home` – Ekran główny wyświetlający zapisaną listę lektur oraz statystyki.
+    2.  `search` – Ekran wyszukiwania nowych książek z Google Books API.
+    3.  `detail/{bookId}` – Ekran szczegółów wybranej książki.
+*   **Przekazywanie parametrów (Route Parameters)**: Nawigacja na ekran szczegółów lektury wykorzystuje dynamiczny parametr `bookId` zdefiniowany w ścieżce trasy jako `detail/{bookId}` (z typem argumentu `NavType.StringType`). Parametr ten jest automatycznie przekazywany do `BookDetailScreen` i służy do odnalezienia odpowiedniej książki w bazie danych Room.
+*   **Wsteczny stos (Back Stack)**: Przechodzenie wstecz (np. z ekranu wyszukiwania lub szczegółów na ekran główny) jest obsługiwane przez standardowe wywołanie `navController.popBackStack()`, co zapewnia płynność interfejsu i zgodność z systemowym przyciskiem Wstecz.
+
 ---
 
 ## 4. Opis głównych ekranów

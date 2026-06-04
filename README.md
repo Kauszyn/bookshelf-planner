@@ -30,6 +30,17 @@ The project has fully implemented:
 - Separate screens for Home, Search and Book details (Navigation Compose).
 - Handles loading, empty and error states.
 
+## Screen Navigation
+
+The application implements a multi-screen architecture powered by **Navigation Compose**:
+- **NavHost Container**: The central navigation hub is configured inside `MainActivity.kt` using `rememberNavController()`.
+- **Navigation Routes**:
+  - `home` - The primary reading list screen showing saved books and reading statistics.
+  - `search` - The search panel to query the Google Books API.
+  - `detail/{bookId}` - The book details screen.
+- **Dynamic Parameter Passing**: Navigation to details is managed using the route parameter `{bookId}` (typed as `NavType.StringType`). The parameter is dynamically extracted and used by the repository to fetch the respective book from the Room database.
+- **Back Stack Management**: System back-button press and visual back indicators are wired via `navController.popBackStack()` to ensure standard Android behavior.
+
 ## Network error handling
 
 The application communicates with the Google Books API and includes robust mechanisms to prevent and handle connection issues and API rate limits gracefully:

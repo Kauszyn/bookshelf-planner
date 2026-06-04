@@ -9,18 +9,20 @@ The app is written in Kotlin with Jetpack Compose and Room.
 ## Current status
 
 The project has fully implemented:
-- MVVM Architecture with manual DI (`AppContainer`).
-- Local SQLite database using Room with data observation via Kotlin Flows.
-- Dynamic network requests to the Google Books API (Retrofit, Moshi, OkHttp).
-- Clean three-screen workflow (Home, Search, Book Details) using Navigation Compose.
-- Prevented duplicate searches, rapid spamming, and blank queries.
-- Refactored error state handling to support robust offline and rate-limited environments.
+- **MVVM Architecture** with manual DI (`AppContainer`).
+- **Local SQLite database** using Room with data observation via Kotlin Flows (version 2 schema).
+- **Dynamic network requests** to the Google Books API (Retrofit, Moshi, OkHttp), with optional API Key configured in `local.properties`.
+- **Clean three-screen workflow** (Home, Search, Book Details) using Navigation Compose.
+- **Reading Statistics Card** at the top of the Home screen displaying: total books, reading books, finished books, and total pages read.
+- **Home list sorting** via a DropdownMenu (Title A-Z, Recently added, Page count, Status).
+- **Visual Branding**: Custom app launcher icon (legacy, circular, adaptive format) and a tailored Material 3 theme color palette (deep navy, warm cream, muted green accents) with disabled elevation overlays.
+- **Resilience**: Prevented duplicate searches, rapid spamming, and blank queries. Refactored error state handling to support robust offline and rate-limited environments.
 
 ## Features
 
 - Search books by title, author or topic (Google Books API).
 - Save selected books to a local list.
-- Local persistence with Room.
+- Local persistence with Room (with safe fallback destructive migration).
 - Three reading statuses: *To read*, *Reading*, *Finished*.
 - Filter saved books by status.
 - Add and edit a personal note for each book.
@@ -65,8 +67,8 @@ app/src/main/java/com/dawidchmiel/bookshelfplanner/
 │   ├── remote/             # Retrofit: GoogleBooksApi, DTOs
 │   └── repository/         # BookRepository
 └── ui/
-    ├── screens/            # HomeScreen, SearchScreen, BookDetailScreen, ViewModel
-    └── theme/              # BookShelfTheme
+    ├── screens/            # HomeScreen, SearchScreen, BookDetailScreen, ViewModel, Components
+    └── theme/              # BookShelfTheme, Theme
 ```
 
 ## Requirements
@@ -100,7 +102,6 @@ so no extra configuration is needed.
 
 ## Planned improvements
 
-- Sorting on the Home screen (title, status, page count).
 - Search input debouncing.
 - Snackbar confirmation after saving a book.
 - Reading progress field (current page).

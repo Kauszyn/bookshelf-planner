@@ -9,5 +9,6 @@ data class Book(
     val publishedDate: String?,
     val pageCount: Int?,
     val status: BookStatus = BookStatus.TO_READ,
-    val personalNote: String = ""
+    val personalNote: String = "",
+    val dateAdded: Long = System.currentTimeMillis()
 )

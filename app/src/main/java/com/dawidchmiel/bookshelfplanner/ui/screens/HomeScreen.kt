@@ -1,18 +1,28 @@
 package com.dawidchmiel.bookshelfplanner.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -47,15 +57,72 @@ fun HomeScreen(
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.weight(1f)) {
                     Text("Your reading plan", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-                    Text("${books.size} saved books")
                 }
                 Button(onClick = onSearchClick) { Text("Search") }
             }
 
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 16.dp)) {
-                FilterChip(selected = selectedStatus == null, onClick = { selectedStatus = null }, label = { Text("All") })
-                BookStatus.entries.forEach { status ->
-                    FilterChip(selected = selectedStatus == status, onClick = { selectedStatus = status }, label = { Text(status.label) })
+            if (books.isNotEmpty()) {
+                Spacer(Modifier.height(16.dp))
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = "Reading Stats",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column {
+                                Text("Total books: ${books.size}", style = MaterialTheme.typography.bodyMedium)
+                                Text("Reading: ${books.count { it.status == BookStatus.READING }}", style = MaterialTheme.typography.bodyMedium)
+                            }
+                            Column {
+                                Text("Finished: ${books.count { it.status == BookStatus.FINISHED }}", style = MaterialTheme.typography.bodyMedium)
+                                val finishedPages = books.filter { it.status == BookStatus.FINISHED }.sumOf { it.pageCount ?: 0 }
+                                Text("Pages read: $finishedPages", style = MaterialTheme.typography.bodyMedium)
+                            }
+                        }
+                    }
+                }
+            }
+
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+            ) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.weight(1f)) {
+                    FilterChip(selected = selectedStatus == null, onClick = { selectedStatus = null }, label = { Text("All") })
+                    BookStatus.entries.forEach { status ->
+                        FilterChip(selected = selectedStatus == status, onClick = { selectedStatus = status }, label = { Text(status.label) })
+                    }
+                }
+
+                val sortOrder by viewModel.sortOrder.collectAsState()
+                var expanded by remember { mutableStateOf(false) }
+
+                Box {
+                    IconButton(onClick = { expanded = true }) {
+                        Icon(imageVector = Icons.AutoMirrored.Filled.List, contentDescription = "Sort books")
+                    }
+                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                        BookSortOrder.entries.forEach { order ->
+                            DropdownMenuItem(
+                                text = { Text(order.label) },
+                                onClick = {
+                                    viewModel.onSortOrderChange(order)
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
                 }
             }
 

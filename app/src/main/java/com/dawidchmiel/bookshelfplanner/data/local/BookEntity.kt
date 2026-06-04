@@ -15,7 +15,8 @@ data class BookEntity(
     val publishedDate: String?,
     val pageCount: Int?,
     val status: BookStatus,
-    val personalNote: String
+    val personalNote: String,
+    val dateAdded: Long
 )
 
 fun BookEntity.toBook() = Book(
@@ -27,7 +28,8 @@ fun BookEntity.toBook() = Book(
     publishedDate = publishedDate,
     pageCount = pageCount,
     status = status,
-    personalNote = personalNote
+    personalNote = personalNote,
+    dateAdded = dateAdded
 )
 
 fun Book.toEntity() = BookEntity(
@@ -39,5 +41,6 @@ fun Book.toEntity() = BookEntity(
     publishedDate = publishedDate,
     pageCount = pageCount,
     status = status,
-    personalNote = personalNote
+    personalNote = personalNote,
+    dateAdded = dateAdded
 )

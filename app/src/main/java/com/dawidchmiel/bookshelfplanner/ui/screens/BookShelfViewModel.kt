@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -23,8 +24,30 @@ sealed interface SearchUiState {
     data class Error(val message: String) : SearchUiState
 }
 
+enum class BookSortOrder(val label: String) {
+    TITLE_AZ("Title A-Z"),
+    RECENTLY_ADDED("Recently added"),
+    PAGE_COUNT("Page count"),
+    STATUS("Status")
+}
+
 class BookShelfViewModel(private val repository: BookRepository) : ViewModel() {
-    val savedBooks: StateFlow<List<Book>> = repository.savedBooks.stateIn(
+    private val _sortOrder = MutableStateFlow(BookSortOrder.TITLE_AZ)
+    val sortOrder = _sortOrder.asStateFlow()
+
+    fun onSortOrderChange(order: BookSortOrder) { _sortOrder.value = order }
+
+    val savedBooks: StateFlow<List<Book>> = combine(
+        repository.savedBooks,
+        _sortOrder
+    ) { books, order ->
+        when (order) {
+            BookSortOrder.TITLE_AZ -> books.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.title })
+            BookSortOrder.RECENTLY_ADDED -> books.sortedByDescending { it.dateAdded }
+            BookSortOrder.PAGE_COUNT -> books.sortedByDescending { it.pageCount ?: 0 }
+            BookSortOrder.STATUS -> books.sortedBy { it.status.ordinal }
+        }
+    }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = emptyList()

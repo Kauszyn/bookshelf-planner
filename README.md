@@ -5,7 +5,16 @@ Search books on Google Books, save the ones you are interested in,
 mark their reading status and add your own notes.
 
 The app is written in Kotlin with Jetpack Compose and Room.
-This is the first version of the project, more features will be added later.
+
+## Current status
+
+The project has fully implemented:
+- MVVM Architecture with manual DI (`AppContainer`).
+- Local SQLite database using Room with data observation via Kotlin Flows.
+- Dynamic network requests to the Google Books API (Retrofit, Moshi, OkHttp).
+- Clean three-screen workflow (Home, Search, Book Details) using Navigation Compose.
+- Prevented duplicate searches, rapid spamming, and blank queries.
+- Refactored error state handling to support robust offline and rate-limited environments.
 
 ## Features
 
@@ -18,6 +27,20 @@ This is the first version of the project, more features will be added later.
 - Delete books from the list.
 - Separate screens for Home, Search and Book details (Navigation Compose).
 - Handles loading, empty and error states.
+
+## Network error handling
+
+The application communicates with the Google Books API and includes robust mechanisms to prevent and handle connection issues and API rate limits gracefully:
+- **HTTP 429 (Too Many Requests)**: Handled by displaying a clear message: *"Too many requests. Please wait a moment and try again."*. Upon encountering a 429, a 5-second cooldown is activated.
+- **HTTP 503 (Service Unavailable)**: Handled by showing: *"Google Books is temporarily unavailable. Please try again later."*.
+- **No Internet / Connection Offline**: Caught as an `IOException` (e.g. timeout or host resolution failure) and presented to the user as: *"No internet connection. Check your network and try again."*.
+- **Other Failures**: Generic fallback showing *"Something went wrong while searching books."*.
+- **Technical Detail Logs**: Internal exception traces and errors are logged using standard `Log.e` for debugging and are kept out of the user interface.
+- **Request Prevention**:
+  - The **Go** and **Retry** buttons are automatically disabled during active loading state or during the active rate-limit cooldown.
+  - Software keyboard search (IME Action) is blocked if buttons are disabled.
+  - Short 1-second cooldown checks prevent repeated queries if the button is clicked multiple times rapidly.
+  - Blank searches (consisting of empty strings or whitespaces) are blocked from being sent to the network.
 
 ## Tech stack
 
@@ -50,14 +73,14 @@ app/src/main/java/com/dawidchmiel/bookshelfplanner/
 
 - Android Studio Ladybug or newer
 - Android SDK 35
-- JDK 17
+- JDK 17 (or Android Studio's embedded JBR)
 - A device or emulator with Android 8.0 (API 26) or higher
 
 ## How to run
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/Kauszyn/bookshelf-planner-ptm.git
+   git clone https://github.com/Kauszyn/bookshelf-planner.git
    ```
 2. Open the project folder in Android Studio (open the root `bookshelf-planner` folder, not the `app` folder).
 3. Wait for the Gradle sync to finish.

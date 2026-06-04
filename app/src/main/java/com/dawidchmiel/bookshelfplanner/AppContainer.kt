@@ -32,6 +32,7 @@ class AppContainer(context: Context) {
 
     val repository = BookRepository(
         dao = database.bookDao(),
-        api = api
+        api = api,
+        apiKey = BuildConfig.GOOGLE_BOOKS_API_KEY.takeIf { it.isNotBlank() }
     )
 }

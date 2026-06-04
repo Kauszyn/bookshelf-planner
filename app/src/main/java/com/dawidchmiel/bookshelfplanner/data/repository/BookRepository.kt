@@ -12,13 +12,15 @@ import kotlinx.coroutines.flow.map
 
 class BookRepository(
     private val dao: BookDao,
-    private val api: GoogleBooksApi
+    private val api: GoogleBooksApi,
+    private val apiKey: String? = null
 ) {
     val savedBooks: Flow<List<Book>> = dao.observeBooks().map { entities -> entities.map { it.toBook() } }
 
     fun observeBook(id: String): Flow<Book?> = dao.observeBook(id).map { it?.toBook() }
 
-    suspend fun searchBooks(query: String): List<Book> = api.searchBooks(query.trim()).items.map { it.toBook() }
+    suspend fun searchBooks(query: String): List<Book> =
+        api.searchBooks(query = query.trim(), key = apiKey).items.map { it.toBook() }
 
     suspend fun saveBook(book: Book) = dao.upsert(book.toEntity())
 

@@ -28,7 +28,7 @@ The project has fully implemented:
 - Add and edit a personal note for each book.
 - Delete books from the list.
 - Separate screens for Home, Search and Book details (Navigation Compose).
-- Handles loading, empty and error states.
+- Robust error handling for offline environments and API constraints to ensure UI stability.
 
 ## Screen Navigation
 
@@ -41,19 +41,25 @@ The application implements a multi-screen architecture powered by **Navigation C
 - **Dynamic Parameter Passing**: Navigation to details is managed using the route parameter `{bookId}` (typed as `NavType.StringType`). The parameter is dynamically extracted and used by the repository to fetch the respective book from the Room database.
 - **Back Stack Management**: System back-button press and visual back indicators are wired via `navController.popBackStack()` to ensure standard Android behavior.
 
-## Network error handling
+## Screenshots
 
-The application communicates with the Google Books API and includes robust mechanisms to prevent and handle connection issues and API rate limits gracefully:
-- **HTTP 429 (Too Many Requests)**: Handled by displaying a clear message: *"Too many requests. Please wait a moment and try again."*. Upon encountering a 429, a 5-second cooldown is activated.
-- **HTTP 503 (Service Unavailable)**: Handled by showing: *"Google Books is temporarily unavailable. Please try again later."*.
-- **No Internet / Connection Offline**: Caught as an `IOException` (e.g. timeout or host resolution failure) and presented to the user as: *"No internet connection. Check your network and try again."*.
-- **Other Failures**: Generic fallback showing *"Something went wrong while searching books."*.
-- **Technical Detail Logs**: Internal exception traces and errors are logged using standard `Log.e` for debugging and are kept out of the user interface.
-- **Request Prevention**:
-  - The **Go** and **Retry** buttons are automatically disabled during active loading state or during the active rate-limit cooldown.
-  - Software keyboard search (IME Action) is blocked if buttons are disabled.
-  - Short 1-second cooldown checks prevent repeated queries if the button is clicked multiple times rapidly.
-  - Blank searches (consisting of empty strings or whitespaces) are blocked from being sent to the network.
+Below is a visual overview of the BookShelf Planner interface and its key features:
+
+| **Main Reading List (Home)** | **Status Filtering** |
+|:---:|:---:|
+| ![Home page](screenshots/home_page.png) <br> *Home screen displaying saved reading list, reading statistics card, and status filter chips.* | ![Filter view](screenshots/category_view.png) <br> *Filter chips in action, showing only the books currently being read ("Reading" status).* |
+
+| **Interactive Sorting** | **Sorted List View** |
+|:---:|:---:|
+| ![Sorting menu](screenshots/sort_view.png) <br> *Interactive sorting menu allowing the user to order books by Title, Date Added, Page Count, or Reading Status.* | ![Sorted page count](screenshots/sorted_by_pagecount.png) <br> *Saved books sorted in descending order by their page count.* |
+
+| **Google Books Search** | **Details & Status** |
+|:---:|:---:|
+| ![Search view](screenshots/seearch_view.png) <br> *Search panel integrated with Google Books API, displaying search results as cards with covers and quick save options.* | ![Details view](screenshots/details_and_status_view.png) <br> *Book details screen containing comprehensive metadata, dynamic status selection, and personal reading notes.* |
+
+| **Personal Notes** | **Branding & Theme** |
+|:---:|:---:|
+| ![Notes view](screenshots/note_view.png) <br> *Editing and saving a personal note linked with the local Room database.* | ![Logo and branding](screenshots/BK_logo.png) <br> *Custom launcher icon and cohesive Material 3 visual identity.* |
 
 ## Tech stack
 
